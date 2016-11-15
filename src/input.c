@@ -14,19 +14,19 @@ int valid_interations(char *);
 int check_input(int argc, char *argv[]) {
   if (!valid_size(argc)) {
     print_usage_error();
-    return 1;
+    return FALSE;
   }
   if (!valid_input(argv[1])) {
     print_file_error(argv[1]);
-    return 1;
+    return FALSE;
   }
   if (!valid_processors(argv[3])) {
     print_number_error(argv[3]);
-    return 1;
+    return FALSE;
   }
   if(!valid_interations(argv[4])) {
     print_number_error(argv[4]);
-    return 1;
+    return FALSE;
   }
 
   return TRUE;
