@@ -1,2 +1,8 @@
-altPhisics: src/main.c src/input.c src/input.h src/prints.c src/prints.h
-	gcc -o bin/altPhisics src/main.c src/input.c src/prints.c -Wall -pedantic
+CC=gcc
+CFLAGS=-Wall -pedantic 
+LIBS=-lm
+
+DEPS = src/input.h src/prints.h src/color.h
+SRC = src/main.c src/input.c src/prints.c src/color.c
+altPhisics: $(DEPS) $(SRC)
+	gcc -o bin/altPhisics $(SRC) $(CFLAGS) $(LIBS)

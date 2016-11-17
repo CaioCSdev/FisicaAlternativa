@@ -1,5 +1,6 @@
 #include "input.h"
 #include "prints.h"
+#include "color.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
