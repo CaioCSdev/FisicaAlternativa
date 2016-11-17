@@ -1,23 +1,32 @@
 #include <stdio.h>
 #include "prints.h"
 
+#define RED   "\x1B[31m"
+#define GRN   "\x1B[32m"
+#define YEL   "\x1B[33m"
+#define BLU   "\x1B[34m"
+#define MAG   "\x1B[35m"
+#define CYN   "\x1B[36m"
+#define WHT   "\x1B[37m"
+#define RESET "\x1B[0m"
+
 void print_usage_error() {
-  printf("\x1b[31m" "usage: altPhisics ");
+  printf(RED "usage: altPhisics ");
   printf("<input_file> ");
   printf("<output_file> ");
   printf("<number of interations> ");
-  printf("<number of processors>\n");
+  printf("<number of processors>\n" RESET);
 }
 
 void print_file_error(char * file) {
-  printf("\x1b[31m" "file <%s> not found\n", file);
+  printf(RED "file <%s> not found\n" RESET, file);
 }
 void print_number_error(char * n) {
-  printf("\x1b[31m" "invalid number <%s>\n", n);
+  printf(RED "invalid number <%s>\n" RESET, n);
 }
 
 void print_file_type_error() {
-  printf("\x1b[31m" "I can only read ppm type P3\n");
+  printf(RED "I can only read ppm type P3\n" RESET);
 }
 
 void print_matrix_in_file(char * file_name, int *** matrix, int width, int height) {
