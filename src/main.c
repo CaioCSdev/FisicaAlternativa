@@ -14,22 +14,31 @@ int main(int argc, char *argv[]) {
   char file_type[2];
   int width;
   int height;
+  int max_size;
   FILE *input;
 
   input = fopen (argv[1],"r");
   fscanf(input, "%s", file_type);
   if(strcmp(file_type, "P3")) {
     print_file_type_error();
-    return 0;
+    exit(-1);
   }
 
   remove_comment_from_file(input);
 
   fscanf(input, "%d", &width);
   fscanf(input, "%d", &height);
+  fscanf(input, "%d", &max_size);
+  if(max_size != 255){
+    printf("Max color should be 255, is %d\n", max_size);
+    exit(-1);
+  }
+
+  remove_comment_from_file(input);
 
   int ***image = set_image(input, width, height);
 
+  print_matrix_in_file("original.ppm", image, width, height);
   print_matrix_in_file(argv[2], new_colors(image,height, width), width, height);
 
   fclose (input);

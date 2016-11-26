@@ -41,16 +41,20 @@ int*** new_colors(int ***image, int height, int width) {
 
 /*Green Angle : where 90 degrees is 0 in greenAngle, and 0 degrees is 90.*/
       green_angle = (intensity[GREEN] * 2 * PI);
-      angle = 360 - green_angle + 90;
+      angle = (PI / 2) - green_angle;
+
+      printf("%d %d : green angle is %f PI, angle is %f PI, test = %f\n",i,j,green_angle/PI, angle/PI, sin(PI/2));
 
 /* Red and blue values to be distributed. X component is size * cos, Y component is size * sin */
 /* color_component[0] is X, 1 is Y */
       red_component[Y] = intensity[RED] * sin(angle);
       red_component[X] = intensity[RED] * cos(angle);
 
-      blue_component[Y] = intensity[BLUE] * sin(angle);
-      blue_component[X] = intensity[BLUE] * cos(angle);
+      blue_component[Y] = intensity[BLUE] * sin(angle + PI);
+      blue_component[X] = intensity[BLUE] * cos(angle + PI);
 
+      printf("red component Y %f and X %f\n", red_component[Y], red_component[X]);
+      printf("blue component Y %f and X %f\n", blue_component[Y], blue_component[X]);
 
 /*What neighbours to visit: */
 /* ie. If X component > 0, x + 1 neighbour, x -1 otherwise */
@@ -59,18 +63,27 @@ int*** new_colors(int ***image, int height, int width) {
      if (red_component[Y] > 0) y = 1;
       else y = -1;
 
+      printf("x is %d, and y is %d\n",x,y);
+
 /*Calculating new values */
       if (red_component[X] != 0 && i + x >= 0 && i + x < width)
-        new_image[i + x][j][RED] += received_value(image[i][j][RED], image[i + x][j][RED]);
+        new_image[i + x][j][RED] += received_value(red_component[X] * 255, image[i + x][j][RED]);
 
       if (red_component[Y] != 0 && j + y >= 0 && j + y < height)
-        new_image[i][j + y][RED] += received_value(image[i][j][RED], image[i][j + y][RED]);
+        new_image[i][j + y][RED] += received_value(red_component[Y] * 255, image[i][j + y][RED]);
+
+      if (blue_component[X] > 0) x = 1;
+      else x = -1;
+     if (blue_component[Y] > 0) y = 1;
+      else y = -1;
+
+      printf("x is %d, and y is %d\n",x,y);
 
       if (blue_component[X] != 0 && i + x >= 0 && i + x < width)
-        new_image[i + x][j][BLUE] += received_value(image[i][j][BLUE], image[i + x][j][BLUE]);
+        new_image[i + x][j][BLUE] += received_value(blue_component[X] * 255, image[i + x][j][BLUE]);
 
       if (blue_component[Y] != 0 && j + y >= 0 && j + y < height)
-        new_image[i][j + y][BLUE] += received_value(image[i][j][BLUE], image[i][j + y][BLUE]);
+        new_image[i][j + y][BLUE] += received_value(blue_component[Y] * 255, image[i][j + y][BLUE]);
 
     }
   }
@@ -110,7 +123,9 @@ int*** new_colors(int ***image, int height, int width) {
 double received_value (double self, double neighbour){
   double delta;
 
-  delta = ((1 - neighbour) * self)/4;
+  delta = ((255 - neighbour) * self)/1000;
+
+  printf("Received Value %f\n", delta);
 
   return delta;
 }

@@ -35,6 +35,7 @@ void print_matrix_in_file(char * file_name, int *** matrix, int width, int heigh
 
   fprintf(output, "P3\n");
   fprintf(output, "%d %d\n", width, height);
+  fprintf(output, "255\n");
 
     for (size_t i = 0; i < width; i++) {
       for (size_t j = 0; j < height; j++) {
