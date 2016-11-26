@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 
   int ***image = set_image(input, width, height);
 
-  print_matrix_in_file(argv[2], image, width, height);
+  print_matrix_in_file(argv[2], new_colors(image,height, width), width, height);
 
   fclose (input);
   return 0;
