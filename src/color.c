@@ -61,7 +61,7 @@ int*** new_colors(int ***image, int height, int width) {
 
 /*What neighbours to visit: */
 /* ie. If X component > 0, x + 1 neighbour, x -1 otherwise */
-      if ((int)(red_component[X] * 255) > 0.) x = 1;
+      if ((int)(red_component[X] * 255) > 0) x = 1;
       else x = -1;
       if ((int)(red_component[Y] * 255) > 0) y = 1;
       else y = -1;
@@ -91,16 +91,17 @@ int*** new_colors(int ***image, int height, int width) {
     }
   }
 
-  for (i = 1; i < width-1; i++) {
-    for (j = 1; j < height-1; j++) {
+  for (i = 0; i < width; i++) {
+    for (j = 0; j < height; j++) {
       for (color = 0; color < 4; color += 2){
         spread_value = 0;
 
         if (new_image[i][j][color] < 0) new_image[i][j][color] = 0;
         else if (new_image[i][j][color] > 255){ 
-          spread_value = (1 - new_image[i][j][color]);
+          spread_value = (255 - new_image[i][j][color]);
           new_image[i][j][color] = 255;
         }
+
         if (spread_value){
           aux = spread_value/4;
 
@@ -108,8 +109,11 @@ int*** new_colors(int ***image, int height, int width) {
           if (new_image[i][j+1][color] + aux >=0 && new_image[i][j+1][color] + aux <= 255) new_image[i][j+1][color] += aux;
           if (new_image[i-1][j][color] + aux >=0 && new_image[i-1][j][color] + aux <= 255) new_image[i-1][j][color] += aux;
           if (new_image[i][j-1][color] + aux >=0 && new_image[i][j-1][color] + aux <= 255) new_image[i][j-1][color] += aux;
+
+          if(new_image[i+1][j][color] < 0 || new_image[i-1][j][color] < 0 || new_image[i][j+1][color] < 0 || new_image[i][j-1][color] < 0)printf("ERRO\n");
         }
       }
+
       aux2 = sqrt(pow(((float)new_image[i][j][RED]/255.),2) + pow(((float)new_image[i][j][BLUE]/255.),2));
       aux2 = acos((float)new_image[i][j][BLUE] / (255*aux2));
 
@@ -127,7 +131,8 @@ int*** new_colors(int ***image, int height, int width) {
 
 /*      printf("old %d new %f green\n",image[i][j][GREEN], intensity[GREEN] * 255);
 */
-      if (intensity[GREEN] > 0)new_image[i][j][GREEN] = intensity[GREEN] * 255;
+      if (intensity[GREEN] > 0 && intensity[GREEN] <= 1)new_image[i][j][GREEN] = intensity[GREEN] * 255;
+      else if(intensity[GREEN] > 1) new_image[i][j][GREEN] = 1;
       else new_image[i][j][GREEN] = 0;
     }
   }

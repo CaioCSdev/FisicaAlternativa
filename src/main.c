@@ -15,6 +15,7 @@ int main(int argc, char *argv[]) {
   int width;
   int height;
   int max_size;
+  int i;
   FILE *input;
 
   input = fopen (argv[1],"r");
@@ -39,7 +40,11 @@ int main(int argc, char *argv[]) {
   int ***image = set_image(input, width, height);
 
   print_matrix_in_file("original.ppm", image, width, height);
-  print_matrix_in_file(argv[2], new_colors(image,height, width), width, height);
+
+  for (i = 0; i < atoi(argv[3]); i++){
+    image = new_colors(image,height, width);
+  }
+  print_matrix_in_file(argv[2], image, width, height);
 
   fclose (input);
   return 0;

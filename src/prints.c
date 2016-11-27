@@ -41,6 +41,7 @@ void print_matrix_in_file(char * file_name, int *** matrix, int width, int heigh
       for (size_t j = 0; j < height; j++) {
         for (size_t k = 0; k < 3; k++) {
           fprintf(output, "%3d ", matrix[i][j][k] );
+          if (matrix[i][j][k] < 0) printf("%d %d %d eh <0\n",(int)i,(int)j,(int)k);
         }
         fprintf(output, "  ");
       }
