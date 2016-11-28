@@ -44,7 +44,7 @@ int*** new_colors(int ***image, int height, int width) {
 
 /*Green Angle : where 90 degrees is 0 in greenAngle, and 0 degrees is 90.*/
       green_angle = (intensity[GREEN] * 2 * PI);
-      angle = (PI / 2) - green_angle;
+      angle = (PI * 0.5) - green_angle;
 
 /*      printf("%d %d : IMAGE = %d \ngreen angle is %f PI, angle is %f PI, test = %f\n",i,j,image[i][j][GREEN],green_angle/PI, angle/PI, sin(PI/2));*/
 
@@ -97,7 +97,7 @@ int*** new_colors(int ***image, int height, int width) {
         spread_value = 0;
 
         if (new_image[i][j][color] < 0) new_image[i][j][color] = 0;
-        else if (new_image[i][j][color] > 255){ 
+        else if (new_image[i][j][color] > 255){
           spread_value = (255 - new_image[i][j][color]);
           new_image[i][j][color] = 255;
         }
@@ -137,7 +137,7 @@ int*** new_colors(int ***image, int height, int width) {
     }
   }
 
-  return new_image;  
+  return new_image;
 }
 
 double received_value (double self, double neighbour){
