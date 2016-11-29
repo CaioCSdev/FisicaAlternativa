@@ -13,81 +13,27 @@
 
 int*** new_colors(int***, int, int );
 double received_value(double, double);
-
+int *** alloc_image (int, int, int ***);
+double calculate_angle(double);
+double *scale(int * );
+void forces(double , int , double , int ***, int *** , int, int);
 
 /*IMPORTANTE: As bordas sao consideradas fixas e nunca se alteram. */
 
 int*** new_colors(int ***image, int height, int width) {
 
-  int i, j, x, y, color, aux;
-  double intensity[3], green_angle, angle, red_component[2], blue_component[2], spread_value, aux2;
+  int i, j, color, aux;
+  double *intensity, green_angle, angle, spread_value, aux2;
   int ***new_image;
 
-/*New Image allocation*/
-  new_image = malloc(width * sizeof(int**));
-  for (i = 0; i < width; i++) {
-    new_image[i] = malloc(height * sizeof(int*));
-    for (j = 0; j < height; j++) {
-      new_image[i][j] = malloc(3 * sizeof(int));
-      new_image[i][j][RED] = image[i][j][RED];
-      new_image[i][j][GREEN] = image[i][j][GREEN];
-      new_image[i][j][BLUE] = image[i][j][BLUE];
-    }
-  }
+  new_image = alloc_image(width, height, image);
 
   for (i = 1; i < width-1; i++) {
     for (j = 1; j < height-1; j++) {
-/*RGB values on a [0,1] scale */
-      intensity[RED] = ((double)image[i][j][RED] / 255.);
-      intensity[GREEN] = ((double)image[i][j][GREEN] / 255.);
-      intensity[BLUE] = ((double)image[i][j][BLUE] / 255.);
-
-/*Green Angle : where 90 degrees is 0 in greenAngle, and 0 degrees is 90.*/
-      green_angle = (intensity[GREEN] * 2 * PI);
-      angle = (PI * 0.5) - green_angle;
-
-/*      printf("%d %d : IMAGE = %d \ngreen angle is %f PI, angle is %f PI, test = %f\n",i,j,image[i][j][GREEN],green_angle/PI, angle/PI, sin(PI/2));*/
-
-/* Red and blue values to be distributed. X component is size * cos, Y component is size * sin */
-/* color_component[0] is X, 1 is Y */
-      red_component[Y] = intensity[RED] * sin(angle);
-      red_component[X] = intensity[RED] * cos(angle);
-
-      blue_component[Y] = intensity[BLUE] * sin(angle + PI);
-      blue_component[X] = intensity[BLUE] * cos(angle + PI);
-
-/*      printf("red component X %f and Y %f\n", red_component[X], red_component[Y]);
-      printf("blue component X %f and Y %f\n", blue_component[X], blue_component[Y]);*/
-
-/*What neighbours to visit: */
-/* ie. If X component > 0, x + 1 neighbour, x -1 otherwise */
-      if ((red_component[X]) > 0) x = 1;
-      else x = -1;
-      if ((red_component[Y]) > 0) y = 1;
-      else y = -1;
-
-/*      printf("red: x is %d, and y is %d\n",x,y);*/
-
-/*Calculating new values */
-      if (red_component[X] != 0)
-        new_image[i + x][j][RED] += received_value(red_component[X] * 255, image[i + x][j][RED]);
-
-      if (red_component[Y] != 0)
-        new_image[i][j + y][RED] += received_value(red_component[Y] * 255, image[i][j + y][RED]);
-
-      if ((int)(blue_component[X] * 255) > 0) x = 1;
-      else x = -1;
-      if ((int)(blue_component[Y] * 255) > 0) y = 1;
-      else y = -1;
-
-/*      printf("blue: x is %d, and y is %d\n",x,y);*/
-
-      if (blue_component[X] != 0)
-        new_image[i + x][j][BLUE] += received_value(blue_component[X] * 255, image[i + x][j][BLUE]);
-
-      if (blue_component[Y] != 0)
-        new_image[i][j + y][BLUE] += received_value(blue_component[Y] * 255, image[i][j + y][BLUE]);
-
+      intensity = scale(image[i][j]);
+      angle = calculate_angle(intensity[GREEN]);
+      forces(intensity[RED], RED, angle, new_image, image, i, j);
+      forces(intensity[BLUE], BLUE, angle + PI, new_image, image, i, j);
     }
   }
 
@@ -145,7 +91,59 @@ double received_value (double self, double neighbour){
 
   delta = ((255 - neighbour) * self)/1000;
 
-  /*printf("Received Value %f\n", delta);*/
-
   return delta;
+}
+
+/*New Image allocation*/
+int *** alloc_image (int width, int height, int ***image){
+  int ***new_image = malloc(width * sizeof(int**));
+  int i,j;
+
+  for (i = 0; i < width; i++) {
+    new_image[i] = malloc(height * sizeof(int*));
+    for (j = 0; j < height; j++) {
+      new_image[i][j] = malloc(3 * sizeof(int));
+      new_image[i][j][RED] = image[i][j][RED];
+      new_image[i][j][GREEN] = image[i][j][GREEN];
+      new_image[i][j][BLUE] = image[i][j][BLUE];
+    }
+  }
+
+  return new_image;
+}
+
+/*Green Angle : where 90 degrees is 0 in greenAngle, and 0 degrees is 90.*/
+double calculate_angle(double g_intensity) {
+  return (PI * 0.5) - (g_intensity * 2 * PI);
+}
+
+/*RGB values on a [0,1] scale */
+double *scale(int * intensities) {
+  double *scaled = malloc(3 * sizeof(double));
+
+  for (size_t i = 0; i < 3; i++) {
+    scaled[i] = ((double)intensities[i]/255);
+  }
+
+  return scaled;
+}
+
+void forces(double intensity, int color, double angle, int *** new_image, int *** image, int i, int j) {
+  double projection[2];
+  int x,y;
+
+  projection[X] = intensity * cos(angle);
+  projection[Y] = intensity * sin(angle);
+
+  if (projection[X] > 0) x = 1;
+  else x = -1;
+  if ((projection[Y]) > 0) y = 1;
+  else y = -1;
+
+  if (projection[X])
+    new_image[i + x][j][color] += received_value(projection[X] * 255, image[i + x][j][color]);
+
+  if (projection[Y])
+    new_image[i][j + y][color] += received_value(projection[Y] * 255, image[i][j + y][color]);
+
 }
