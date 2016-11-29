@@ -61,9 +61,9 @@ int*** new_colors(int ***image, int height, int width) {
 
 /*What neighbours to visit: */
 /* ie. If X component > 0, x + 1 neighbour, x -1 otherwise */
-      if ((int)(red_component[X]) > 0) x = 1;
+      if ((red_component[X]) > 0) x = 1;
       else x = -1;
-      if ((int)(red_component[Y]) > 0) y = 1;
+      if ((red_component[Y]) > 0) y = 1;
       else y = -1;
 
 /*      printf("red: x is %d, and y is %d\n",x,y);*/
